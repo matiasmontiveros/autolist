@@ -7,7 +7,7 @@ on:
 
 jobs:
   update-playbackurls
-    runs-on: windows
+    runs-on: ubuntu-latest
 
     steps:
       - name: check out the repo
