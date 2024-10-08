@@ -2,11 +2,13 @@ name: Run PlaybackURL Updater
 
 on:
   schedule:
+  
     - cron: "0 */3 * * *"
   workflow_dispatch:
 
 jobs:
-  update-playbackurls
+  update-playbackurls:
+  
     runs-on: ubuntu-latest
 
     steps:
