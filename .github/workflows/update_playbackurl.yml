@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  update_playbackurls:
+  update_playback_urls:
     runs-on: ubuntu-latests
 
     steps:
