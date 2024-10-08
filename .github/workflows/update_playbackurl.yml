@@ -3,7 +3,7 @@ name: Run PlaybackURL Updater
 on:
   schedule:
   - cron: "0 */3 * * *"
-  workflow_dispath
+  workflow_dispatch
 
 jobs:
   update-playbacksurls:
