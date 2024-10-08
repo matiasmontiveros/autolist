@@ -5,9 +5,8 @@ on:
   - cron: "0 */3 * * *"
   workflow_dispatch:
 
-
 jobs:
-  update-playbackURLs:
+  update-playbackURL:
     runs-on: ubuntu-latests
 
     steps:
