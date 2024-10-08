@@ -7,7 +7,7 @@ on:
 
 
 jobs:
-  update_playback_urls:
+  update-playbackURLs:
     runs-on: ubuntu-latests
 
     steps:
