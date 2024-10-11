@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests schedule  # Instalar ambas dependencias
+          pip install requests schedule PyGithub  # Instalar las dependencias necesarias
 
       - name: Run update scripts
         run: |
