@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests
+          pip install requests schedule  # Instalar ambas dependencias
 
       - name: Run update scripts
         run: |
