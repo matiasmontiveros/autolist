@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
   
 jobs:
-  greet:
+  playbackurls:
     runs-on: ubuntu-latest
 
     steps:
