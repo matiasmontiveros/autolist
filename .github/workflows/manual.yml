@@ -11,15 +11,15 @@ jobs:
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3 # Actualizado
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v4 # Actualizado
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.12" # La versión que estás utilizando
+          python-version: "3.12"
 
       - name: Run update scripts
         run: |
-          git config --global matiamonti@gmail.com
-          git config --global matiasmontiveros
+          git config --global user.email "matiamonti@gmail.com"
+          git config --global user.name "matiasmontiveros"
           python iptv.py
