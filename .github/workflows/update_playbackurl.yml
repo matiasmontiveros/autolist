@@ -2,27 +2,27 @@ name: Run PlaybackURL Updater
 
 on:
   schedule:
-  
     - cron: "0 */3 * * *"
   workflow_dispatch:
-  
+
 jobs:
   playbackurls:
     runs-on: ubuntu-latest
 
     steps:
-      - name: check out the repo
+      - name: Check out the repo
         uses: actions/checkout@v3
 
-      - name: set up Python
+      - name: Set up Python
         uses: actions/setup-python@v4
-        whith:
-           python-version: "3.x"
+        with:  # Corregido 'whith' por 'with'
+          python-version: "3.x"
 
-     - name: Run update scripts
-       run: |
-         git config - -global user.email "matiamonti@gmail.com"
-         git config - -global user.name "matiasmontiveros"
+      - name: Run update scripts
+        run: |
+          git config --global user.email "matiamonti@gmail.com"
+          git config --global user.name "matiasmontiveros"
+
          git add .
          git commit -m "Update playbackURLs"
          git push
