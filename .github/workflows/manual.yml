@@ -27,4 +27,4 @@ jobs:
         run: |
           git config --global user.email "matiamonti@gmail.com"
           git config --global user.name "matiasmontiveros"
-          python codigo_para_iptv.py  # Cambia '.py' por el nombre de tu archivo
+          python iptv.py
