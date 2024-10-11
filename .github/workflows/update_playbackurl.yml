@@ -17,13 +17,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.x"
+
       - name: Run update scripts
         run: |
           git config --global user.email "matiamonti@gmail.com"
           git config --global user.name "matiasmontiveros"
-
-         git add .
-         git commit -m "Update playbackURLs"
-         git push
-       env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
