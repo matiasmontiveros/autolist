@@ -1,30 +1,25 @@
-name: PlaybackURL Updater
+name: Run PlaybackURL Updater
 
-# Ejecuta el workflow cada 3 horas y también permite ejecutarlo manualmente
 on:
   schedule:
     - cron: "0 */3 * * *"
   workflow_dispatch:
 
-# Define los trabajos del workflow
 jobs:
-  update_playbackurls:
+  playbackurls:
     runs-on: ubuntu-latest
 
     steps:
-      # Paso 1: Check out the repo
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3 # Actualizado
 
-      # Paso 2: Set up Python
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v4 # Actualizado
         with:
-          python-version: "3.12"
+          python-version: "3.12" # La versión que estás utilizando
 
-      # Paso 3: Ejecuta el script de actualización
       - name: Run update scripts
         run: |
-          git config --global user.email "matiamonti@gmail.com"
-          git config --global user.name "matiasmontiveros"
-          python iptv.py  # Cambia 'your-script.py' por el nombre de tu archivo
+          git config --global matiamonti@gmail.com
+          git config --global matiasmontiveros
+          python iptv.py
