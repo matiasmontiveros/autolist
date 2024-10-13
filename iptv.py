@@ -1,7 +1,6 @@
 import requests
 import re
 from github import Github
-import os
 
 def extract_playbackurl():
     urls = [
@@ -25,26 +24,37 @@ def extract_playbackurl():
         "https://streamtp1.com/global1.php?stream=tnt_chile"
     ]
     
-    playbackurls = []
+    playbackurls = {}
     
     for url in urls:
         try:
             response = requests.get(url)
-            # Nueva expresión regular para extraer el playbackURL
-            playbackurl = re.findall(r'var playbackURL\s*=\s*"(https?://.*?\.m3u8\?token=.*?)"', response.text)
+            playbackurl = re.findall(r'playbackURL\s*":\s*"(https?://.*?\.m3u8\?token=.*?)"', response.text)
             if playbackurl:
-                playbackurls.append(playbackurl[0])
-            else:
-                print(f"No se encontró playbackURL en {url}")
+                channel_name = url.split("=")[-1].replace("_", " ").capitalize()  # Extraer el nombre del canal
+                playbackurls[channel_name] = playbackurl[0]
         except Exception as e:
             print(f"Error al procesar {url}: {e}")
     
     return playbackurls
 
 def update_m3u_file(m3u_content, playbackurls):
-    for i, url in enumerate(playbackurls, start=1):
-        m3u_content = m3u_content.replace(f"#EXTINF:-1,Canal {i}\n\n", f"#EXTINF:-1,Canal {i}\n{url}\n")
-    return m3u_content
+    lines = m3u_content.splitlines()
+    updated_content = []
+    current_channel = None
+    
+    for line in lines:
+        if line.startswith("#EXTINF:"):
+            current_channel = line.split(",")[1].strip()  # Extraer el nombre del canal
+            updated_content.append(line)
+        elif current_channel in playbackurls:
+            # Si el canal actual tiene una nueva URL, la reemplaza
+            updated_content.append(playbackurls[current_channel])
+            current_channel = None  # Reiniciar el nombre del canal
+        else:
+            updated_content.append(line)
+    
+    return "\n".join(updated_content)
 
 def update_github_file(token, repo_name, file_path, content):
     g = Github(token)
@@ -53,17 +63,21 @@ def update_github_file(token, repo_name, file_path, content):
     try:
         file = repo.get_contents(file_path)
         repo.update_file(file_path, "Actualización de archivo .m3u", content, file.sha)
-        print(f"Archivo {file_path} actualizado correctamente.")
-    except Exception as e:
-        print(f"Error al actualizar el archivo {file_path}: {e}")
-        try:
-            repo.create_file(file_path, "Creación de archivo .m3u", content)
-            print(f"Archivo {file_path} creado correctamente.")
-        except Exception as e:
-            print(f"Error al crear el archivo {file_path}: {e}")
+    except:
+        repo.create_file(file_path, "Creación de archivo .m3u", content)
 
 def process_and_update():
-    m3u_content = "#EXTM3U\n#EXTINF:-1,Canal 1\n\n#EXTINF:-1,Canal 2\n\n"
+    # Suponiendo que tu archivo .m3u tiene los nombres correctos de los canales
+    m3u_content = """
+    #EXTM3U
+    #EXTINF:-1, TNT Sports Argentina
+    https://old-link-1.m3u8
+    #EXTINF:-1, ESPN Premium
+    https://old-link-2.m3u8
+    #EXTINF:-1, TyC Sports
+    https://old-link-3.m3u8
+    """
+    
     playbackurls = extract_playbackurl()
     if playbackurls:
         m3u_content = update_m3u_file(m3u_content, playbackurls)
