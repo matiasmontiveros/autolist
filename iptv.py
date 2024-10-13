@@ -1,6 +1,7 @@
 import requests
 import re
 from github import Github
+import os
 
 def extract_playbackurl():
     urls = [
@@ -29,9 +30,12 @@ def extract_playbackurl():
     for url in urls:
         try:
             response = requests.get(url)
-            playbackurl = re.findall(r'playbackURL\s*":\s*"(https?://.*?\.m3u8\?token=.*?)"', response.text)
+            # Nueva expresión regular para extraer el playbackURL
+            playbackurl = re.findall(r'var playbackURL\s*=\s*"(https?://.*?\.m3u8\?token=.*?)"', response.text)
             if playbackurl:
                 playbackurls.append(playbackurl[0])
+            else:
+                print(f"No se encontró playbackURL en {url}")
         except Exception as e:
             print(f"Error al procesar {url}: {e}")
     
@@ -49,8 +53,14 @@ def update_github_file(token, repo_name, file_path, content):
     try:
         file = repo.get_contents(file_path)
         repo.update_file(file_path, "Actualización de archivo .m3u", content, file.sha)
-    except:
-        repo.create_file(file_path, "Creación de archivo .m3u", content)
+        print(f"Archivo {file_path} actualizado correctamente.")
+    except Exception as e:
+        print(f"Error al actualizar el archivo {file_path}: {e}")
+        try:
+            repo.create_file(file_path, "Creación de archivo .m3u", content)
+            print(f"Archivo {file_path} creado correctamente.")
+        except Exception as e:
+            print(f"Error al crear el archivo {file_path}: {e}")
 
 def process_and_update():
     m3u_content = "#EXTM3U\n#EXTINF:-1,Canal 1\n\n#EXTINF:-1,Canal 2\n\n"
