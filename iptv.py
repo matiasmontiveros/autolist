@@ -31,12 +31,14 @@ def extract_playbackurl():
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
         'Referer': 'https://streamtp1.com',  # Puede que necesites ajustar esto según la URL de origen
-        # 'Cookie': 'aquí puedes agregar cookies si es necesario'  # Descomenta y añade cookies si las necesitas
     }
+    
+    # Inicia un objeto de sesión para manejar cookies automáticamente
+    session = requests.Session()
     
     for url in urls:
         try:
-            response = requests.get(url, headers=headers)
+            response = session.get(url, headers=headers)  # Usar la sesión que maneja cookies automáticamente
             # Ajustar la expresión regular para encontrar playbackURL en un script
             playbackurl = re.findall(r'var\s+playbackURL\s*=\s*"(https?://.*?\.m3u8\?token=.*?)"', response.text)
             if playbackurl:
