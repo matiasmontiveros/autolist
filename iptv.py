@@ -27,14 +27,23 @@ def extract_playbackurl():
     
     playbackurls = {}
     
+    # Encabezados para simular una solicitud de navegador
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+        'Referer': 'https://streamtp1.com',  # Puede que necesites ajustar esto según la URL de origen
+        # 'Cookie': 'aquí puedes agregar cookies si es necesario'  # Descomenta y añade cookies si las necesitas
+    }
+    
     for url in urls:
         try:
-            response = requests.get(url)
+            response = requests.get(url, headers=headers)
             # Ajustar la expresión regular para encontrar playbackURL en un script
             playbackurl = re.findall(r'var\s+playbackURL\s*=\s*"(https?://.*?\.m3u8\?token=.*?)"', response.text)
             if playbackurl:
                 channel_name = url.split("=")[-1].replace("_", " ").capitalize()
                 playbackurls[channel_name] = playbackurl[0]
+            else:
+                print(f"No se encontró playback URL para: {url}")
         except Exception as e:
             print(f"Error al procesar {url}: {e}")
     
