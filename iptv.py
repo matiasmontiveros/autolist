@@ -33,19 +33,26 @@ def extract_playbackurl():
         'Referer': 'https://streamtp1.com',  # Puede que necesites ajustar esto según la URL de origen
     }
     
-    # Inicia un objeto de sesión para manejar cookies automáticamente
+    # Iniciar una sesión que maneje cookies automáticamente
     session = requests.Session()
     
     for url in urls:
         try:
-            response = session.get(url, headers=headers)  # Usar la sesión que maneja cookies automáticamente
-            # Ajustar la expresión regular para encontrar playbackURL en un script
-            playbackurl = re.findall(r'var\s+playbackURL\s*=\s*"(https?://.*?\.m3u8\?token=.*?)"', response.text)
-            if playbackurl:
-                channel_name = url.split("=")[-1].replace("_", " ").capitalize()
-                playbackurls[channel_name] = playbackurl[0]
+            # Realizar la solicitud con sesión que maneja cookies
+            response = session.get(url, headers=headers)
+            
+            # Depurar la respuesta para ver si hay redirecciones o errores de autorización
+            print(f"Respuesta de {url}: {response.status_code}")
+            if response.status_code == 200:
+                # Extraer playbackURL con regex
+                playbackurl = re.findall(r'var\s+playbackURL\s*=\s*"(https?://.*?\.m3u8\?token=.*?)"', response.text)
+                if playbackurl:
+                    channel_name = url.split("=")[-1].replace("_", " ").capitalize()
+                    playbackurls[channel_name] = playbackurl[0]
+                else:
+                    print(f"No se encontró playback URL para: {url}")
             else:
-                print(f"No se encontró playback URL para: {url}")
+                print(f"Error en la respuesta para {url}: {response.status_code}")
         except Exception as e:
             print(f"Error al procesar {url}: {e}")
     
