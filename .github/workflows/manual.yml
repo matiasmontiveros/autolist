@@ -23,6 +23,8 @@ jobs:
           pip install requests schedule PyGithub  # Instalar las dependencias necesarias
 
       - name: Run update scripts
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
         run: |
           git config --global user.email "matiamonti@gmail.com"
           git config --global user.name "matiasmontiveros"
