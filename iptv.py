@@ -1,7 +1,5 @@
 import requests
 import re
-import schedule
-import time
 from github import Github
 
 def extract_playbackurl():
@@ -59,17 +57,12 @@ def process_and_update():
     playbackurls = extract_playbackurl()
     if playbackurls:
         m3u_content = update_m3u_file(m3u_content, playbackurls)
-        token = "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"
+        token = os.getenv("GITHUB_TOKEN")  # Acceder al token desde un entorno seguro
         repo_name = "lista.m3u"
         file_path = "lista.m3u"
         update_github_file(token, repo_name, file_path, m3u_content)
     else:
         print("No se encontraron playback URLs para actualizar.")
 
-# Programar la ejecución cada 3 horas
-schedule.every(3).hours.do(process_and_update)
-
-# Loop para mantener la ejecución del script
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# Ejecutar el script una vez
+process_and_update()
