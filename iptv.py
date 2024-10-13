@@ -57,7 +57,7 @@ def process_and_update():
     playbackurls = extract_playbackurl()
     if playbackurls:
         m3u_content = update_m3u_file(m3u_content, playbackurls)
-        token = os.getenv("GITHUB_TOKEN")  # Acceder al token desde un entorno seguro
+        token = os.getenv("TOKEN")  # Acceder al token desde un entorno seguro
         repo_name = "lista.m3u"
         file_path = "lista.m3u"
         update_github_file(token, repo_name, file_path, m3u_content)
