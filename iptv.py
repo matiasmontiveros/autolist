@@ -1,5 +1,9 @@
 import requests
 import re
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from github import Github
 import os
 
@@ -26,35 +30,35 @@ def extract_playbackurl():
     ]
     
     playbackurls = {}
-    
-    # Encabezados para simular una solicitud de navegador
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
-        'Referer': 'https://streamtp1.com',  # Puede que necesites ajustar esto según la URL de origen
-    }
-    
-    # Iniciar una sesión que maneje cookies automáticamente
-    session = requests.Session()
-    
+
+    # Configurar Selenium en modo headless para no abrir el navegador visualmente
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+
     for url in urls:
         try:
-            # Realizar la solicitud con sesión que maneja cookies
-            response = session.get(url, headers=headers)
-            
-            # Depurar la respuesta para ver si hay redirecciones o errores de autorización
-            print(f"Respuesta de {url}: {response.status_code}")
-            if response.status_code == 200:
-                # Extraer playbackURL con regex
-                playbackurl = re.findall(r'var\s+playbackURL\s*=\s*"(https?://.*?\.m3u8\?token=.*?)"', response.text)
-                if playbackurl:
-                    channel_name = url.split("=")[-1].replace("_", " ").capitalize()
-                    playbackurls[channel_name] = playbackurl[0]
-                else:
-                    print(f"No se encontró playback URL para: {url}")
+            # Usar Selenium para cargar la página y obtener el playbackURL
+            driver.get(url)
+            print(f"Accediendo a {url} con Selenium")
+
+            # Usar Selenium para buscar el playbackURL
+            page_source = driver.page_source
+            playbackurl = re.findall(r'var\s+playbackURL\s*=\s*"(https?://.*?\.m3u8\?token=.*?)"', page_source)
+
+            if playbackurl:
+                channel_name = url.split("=")[-1].replace("_", " ").capitalize()
+                playbackurls[channel_name] = playbackurl[0]
+                print(f"Encontrado playbackURL con Selenium para {channel_name}")
             else:
-                print(f"Error en la respuesta para {url}: {response.status_code}")
+                print(f"No se encontró playback URL para: {url} con Selenium")
         except Exception as e:
-            print(f"Error al procesar {url}: {e}")
+            print(f"Error al procesar {url} con Selenium: {e}")
+    
+    driver.quit()
     
     return playbackurls
 
