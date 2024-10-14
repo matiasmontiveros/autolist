@@ -3,6 +3,9 @@ import re
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from github import Github
 import os
@@ -37,6 +40,12 @@ def extract_playbackurl():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
+    # Headers a incluir en las solicitudes
+    headers = {
+        "Referer": "https://streamtp1.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0"
+    }
+
     try:
         # Intentar instalar y obtener el path de chromedriver
         chromedriver_path = ChromeDriverManager().install()
@@ -46,9 +55,12 @@ def extract_playbackurl():
 
         for url in urls:
             try:
-                # Usar Selenium para cargar la página y obtener el playbackURL
+                # Usar Selenium para cargar la página
                 driver.get(url)
                 print(f"Accediendo a {url} con Selenium")
+
+                # Esperar hasta que el elemento que contiene el playbackURL esté presente
+                WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="elemento_que_contiene_playbackURL"]')))
 
                 # Usar Selenium para buscar el playbackURL
                 page_source = driver.page_source
