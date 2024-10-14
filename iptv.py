@@ -37,26 +37,33 @@ def extract_playbackurl():
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
 
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    try:
+        # Intentar instalar y obtener el path de chromedriver
+        chromedriver_path = ChromeDriverManager().install()
+        print(f"chromedriver está disponible en: {chromedriver_path}")
+        
+        driver = webdriver.Chrome(service=Service(chromedriver_path), options=chrome_options)
 
-    for url in urls:
-        try:
-            # Usar Selenium para cargar la página y obtener el playbackURL
-            driver.get(url)
-            print(f"Accediendo a {url} con Selenium")
+        for url in urls:
+            try:
+                # Usar Selenium para cargar la página y obtener el playbackURL
+                driver.get(url)
+                print(f"Accediendo a {url} con Selenium")
 
-            # Usar Selenium para buscar el playbackURL
-            page_source = driver.page_source
-            playbackurl = re.findall(r'var\s+playbackURL\s*=\s*"(https?://.*?\.m3u8\?token=.*?)"', page_source)
+                # Usar Selenium para buscar el playbackURL
+                page_source = driver.page_source
+                playbackurl = re.findall(r'var\s+playbackURL\s*=\s*"(https?://.*?\.m3u8\?token=.*?)"', page_source)
 
-            if playbackurl:
-                channel_name = url.split("=")[-1].replace("_", " ").capitalize()
-                playbackurls[channel_name] = playbackurl[0]
-                print(f"Encontrado playbackURL con Selenium para {channel_name}")
-            else:
-                print(f"No se encontró playback URL para: {url} con Selenium")
-        except Exception as e:
-            print(f"Error al procesar {url} con Selenium: {e}")
+                if playbackurl:
+                    channel_name = url.split("=")[-1].replace("_", " ").capitalize()
+                    playbackurls[channel_name] = playbackurl[0]
+                    print(f"Encontrado playbackURL con Selenium para {channel_name}")
+                else:
+                    print(f"No se encontró playback URL para: {url} con Selenium")
+            except Exception as e:
+                print(f"Error al procesar {url} con Selenium: {e}")
+    except Exception as e:
+        print(f"Error al instalar o obtener chromedriver: {e}")
     
     driver.quit()
     
